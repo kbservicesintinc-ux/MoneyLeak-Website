@@ -1,0 +1,23 @@
+name: MoneyLeak Website Security Scan
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '41 10 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  website-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify tracked static website and deployed HTTPS pages
+        run: python3 .github/scripts/site-security-check.py
+      - name: Report limits
+        if: always()
+        run: |
+          echo 'Checks public static website source, credential signatures, dependency-absence, trusted TLS, and four deployed pages; not an operating-system, workstation or penetration test.' >> "$GITHUB_STEP_SUMMARY"
